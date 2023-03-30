@@ -30,8 +30,11 @@ func NewMiddleware(configFuncs ...ConfigFunc) middleware.Middleware {
 					break
 				}
 			}
-			if identity.Empty() && conf.emptyIdentityError != nil {
-				return nil, conf.emptyIdentityError
+			if identity.Empty() {
+				emptyIdentityErr := conf.emptyIdentityErrorBuilder(ctx)
+				if emptyIdentityErr != nil {
+					return nil, emptyIdentityErr
+				}
 			}
 			return handler(contextWithIdentity(ctx, identity), req)
 		}
